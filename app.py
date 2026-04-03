@@ -2,13 +2,13 @@ from flask import Flask, render_template, request, jsonify, session, redirect, u
 from flask_cors import CORS
 import sqlite3, os, json
 from datetime import datetime, date
-from anthropic import Anthropic
+import google.generativeai as genai
 
 app = Flask(__name__)
 app.secret_key = "leetgotchi-secret-change-in-prod"
 CORS(app)
 
-client = Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY", ""))
+genai.configure(api_key=os.environ.get("GEMINI_API_KEY", ""))
 
 DB = "leetgotchi.db"
 
@@ -261,7 +261,7 @@ def pet_status():
 
 def evaluate_with_ai(duration, problem_explanation, approach, solution,
                      complexity, reflection, problem_title):
-    if not os.environ.get("ANTHROPIC_API_KEY"):
+    if not os.environ.get("GEMINI_API_KEY"):
         # Fallback scoring if no API key
         score = 50
         if duration >= 30: score += 20
@@ -298,13 +298,9 @@ Return ONLY valid JSON with these exact keys:
 }}"""
 
     try:
-        response = client.messages.create(
-            model="claude-sonnet-4-20250514",
-            max_tokens=500,
-            messages=[{"role": "user", "content": prompt}]
-        )
-        text = response.content[0].text.strip()
-        # Strip markdown fences if present
+        model = genai.GenerativeModel("gemini-1.5-flash")
+        response = model.generate_content(prompt)
+        text = response.text.strip()
         if text.startswith("```"):
             text = text.split("```")[1]
             if text.startswith("json"):
