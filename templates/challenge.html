@@ -404,7 +404,7 @@
 let sessionId = null;
 let startTime = null;
 let timerInterval = null;
-const REQUIRED_MINUTES = 1;
+const REQUIRED_MINUTES = 30;
 
 // Load pet stage
 fetch('/api/pet_status').then(r=>r.json()).then(p=>{
@@ -494,7 +494,7 @@ function checkSubmitReady() {
   const explain = document.getElementById('problem-explanation').value.length;
   const approach = document.getElementById('approach-explanation').value.length;
   const complexity = document.getElementById('complexity-explanation').value.length;
-  const ready = elapsed >= 1 && explain >= 10 && approach >= 10 && complexity >= 10;
+  const ready = elapsed >= 5 && explain >= 50 && approach >= 50 && complexity >= 50;
   document.getElementById('btn-submit').disabled = !ready;
 }
 
